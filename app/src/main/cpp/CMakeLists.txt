@@ -1,4 +1,7 @@
-
+#需要区别jni和ndk是没有任何关系的
+#但是你要是想使用Java调用c的功能就需要jni
+#就好比我想使用FFmpeg，那么我们把FFmpeg编译成.so库，然后我们还需要定义jni，从jni调用FFmpeg函数功能
+#就比如native-lib只是为了调用SignTool的功能，而我们就需要定义jni暴露接口给java使用，就相当一个中介者。
 
 #指定cmake 最低支持的版本
 cmake_minimum_required(VERSION 3.4.1)
