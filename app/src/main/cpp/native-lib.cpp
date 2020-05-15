@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include "Test.h"
+#include <iostream>
 #include <android/log.h>
 
 using namespace std;
@@ -76,25 +77,65 @@ Java_com_youbesun_myapplication_NDKTool_cReflectJava(
         jobject bean) {
 
 
+    //NDKTool
     jclass pJclass = env->GetObjectClass(thiz);
     jmethodID methodId = env->GetMethodID(pJclass, "printf", "()V");
     env->CallVoidMethod(thiz, methodId);
 
-    //反射ReflectBean
-    const char *clsName = "com/youbesun/myapplication/ReflectBean";
-    jclass beanCls = env->FindClass(clsName);
+    jclass beanCls = env->GetObjectClass(bean);
+
+
+    //反射setName方法
     jmethodID setMethodId = env->GetMethodID(beanCls, "setName", "(Ljava/lang/String;)V");
     jstring pJstring = env->NewStringUTF("999999");
+    //调用setName方法
     env->CallVoidMethod(bean, setMethodId, pJstring);
 
-
     jmethodID getMethodId = env->GetMethodID(beanCls, "getName", "()Ljava/lang/String;");
-    jstring pJobject = static_cast<jstring>(
-            env->CallObjectMethod(bean, getMethodId));
-    LOGE("get返回值：%s", env->GetStringChars(pJobject, NULL));
+    //调用getName方法
+    jobject getMethodRes = env->CallObjectMethod(bean, getMethodId);
+    //将jbject转换为jstring
+    jstring pJobject = static_cast<jstring>(getMethodRes);
+
+    const char *utfChars = env->GetStringUTFChars(pJobject, NULL);
+    LOGE("get返回值：%s", utfChars);
+
+
+    // 静态方法
+    jmethodID staticMethodId = env->GetStaticMethodID(beanCls, "setAddress",
+                                                      "()Ljava/lang/String;");
+    jobject staticMethodVal = env->CallStaticObjectMethod(beanCls, staticMethodId);
+    jstring staticMethodValStr = static_cast<jstring>(staticMethodVal);
+    const char *chars = env->GetStringUTFChars(staticMethodValStr, NULL);
+    LOGE("静态方法返回：%s", chars)
+
+
+    //对象Field
+    jfieldID pJfieldId = env->GetFieldID(beanCls, "name", "Ljava/lang/String;");
+    jstring filedStr = env->NewStringUTF("reflect filed");
+    env->SetObjectField(bean, pJfieldId, filedStr);
+
+    //静态Filed
+    jfieldID staticFieldId = env->GetStaticFieldID(beanCls, "address", "Ljava/lang/String;");
+    jstring staticFiledStr = env->NewStringUTF("static reflect filed");
+    env->SetStaticObjectField(beanCls, staticFieldId, staticFiledStr);
 
 
     env->DeleteLocalRef(beanCls);
     env->DeleteLocalRef(pJclass);
     env->DeleteLocalRef(pJstring);
+}
+
+
+//创建对象
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_com_youbesun_myapplication_NDKTool_createBean(JNIEnv *env, jclass thiz) {
+    const char *clsName = "com/youbesun/myapplication/ReflectBean";
+    jclass refCls = env->FindClass(clsName);
+    jmethodID construct = env->GetMethodID(refCls, "<init>", "()V");
+    jobject refObject = env->NewObject(refCls, construct);
+
+    env->DeleteLocalRef(refCls);
+    return refObject;
 }

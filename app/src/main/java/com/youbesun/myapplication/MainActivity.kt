@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
-import java.sql.Ref
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         val reflectBean = ReflectBean()
         NDKTool().cReflectJava(reflectBean)
         Log.e("tag", "$reflectBean")
+
+
+        val bean = NDKTool.createBean()
+        Log.e("tag", "JNI 返回对象：$bean")
     }
 
 

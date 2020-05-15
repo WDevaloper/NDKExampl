@@ -2,6 +2,7 @@ package com.youbesun.myapplication;
 
 import android.util.Log;
 
+
 public class NDKTool {
     static {
         System.loadLibrary("native-lib");
@@ -16,6 +17,8 @@ public class NDKTool {
 
     public native void cReflectJava(ReflectBean bean);
 
+
+    public native static ReflectBean createBean();
 
     public void printf() {
         Log.e("tag", "NDKTool printf");
