@@ -72,7 +72,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_youbesun_myapplication_NDKTool_cReflectJava(
         JNIEnv *env,
-        jobject thiz, //非静态方法，就是方法定义本身对象
+        jobject thiz, //非静态方法，就是方法定义本身对象NDKTool的对象
         jobject bean) {
 
 
@@ -80,9 +80,21 @@ Java_com_youbesun_myapplication_NDKTool_cReflectJava(
     jmethodID methodId = env->GetMethodID(pJclass, "printf", "()V");
     env->CallVoidMethod(thiz, methodId);
 
+    //反射ReflectBean
+    const char *clsName = "com/youbesun/myapplication/ReflectBean";
+    jclass beanCls = env->FindClass(clsName);
+    jmethodID setMethodId = env->GetMethodID(beanCls, "setName", "(Ljava/lang/String;)V");
+    jstring pJstring = env->NewStringUTF("999999");
+    env->CallVoidMethod(bean, setMethodId, pJstring);
 
 
+    jmethodID getMethodId = env->GetMethodID(beanCls, "getName", "()Ljava/lang/String;");
+    jstring pJobject = static_cast<jstring>(
+            env->CallObjectMethod(bean, getMethodId));
+    LOGE("get返回值：%s", env->GetStringChars(pJobject, NULL));
 
 
-
+    env->DeleteLocalRef(beanCls);
+    env->DeleteLocalRef(pJclass);
+    env->DeleteLocalRef(pJstring);
 }

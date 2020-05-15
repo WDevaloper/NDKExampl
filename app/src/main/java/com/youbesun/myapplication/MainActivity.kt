@@ -22,8 +22,9 @@ class MainActivity : AppCompatActivity() {
         intArr.forEach { Log.e("tag", "Java数组输出:$it") }
 
 
-        NDKTool().cReflectJava(ReflectBean())
-
+        val reflectBean = ReflectBean()
+        NDKTool().cReflectJava(reflectBean)
+        Log.e("tag", "$reflectBean")
     }
 
 

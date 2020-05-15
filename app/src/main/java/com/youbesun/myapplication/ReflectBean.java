@@ -1,13 +1,21 @@
 package com.youbesun.myapplication;
 
-public class ReflectBean {
-    private int name;
 
-    public int getName() {
+public class ReflectBean {
+    private String name;
+
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectBean{" +
+                "name=" + name +
+                '}';
     }
 }
