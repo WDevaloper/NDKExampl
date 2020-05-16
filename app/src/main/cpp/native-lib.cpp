@@ -219,8 +219,6 @@ void *threadTask(void *args) {
     env->CallVoidMethod(context->cls, methodId);
     delete (context);
     context = 0;
-
-
     return 0;
 }
 
