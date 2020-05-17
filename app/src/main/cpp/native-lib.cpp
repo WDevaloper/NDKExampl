@@ -5,8 +5,15 @@
 #include <iostream>
 #include <android/log.h>
 #include <pthread.h>
+#include <unistd.h>
+#include "inc/fmod_errors.h"
+#include "inc/fmod.hpp"
+#include "inc/fmod_common.h"
+
+using namespace FMOD;
 
 using namespace std;
+
 
 #define LOGI(FORMAT, ...) __android_log_print(ANDROID_LOG_INFO,"tag",FORMAT,##__VA_ARGS__);
 #define LOGE(FORMAT, ...) __android_log_print(ANDROID_LOG_ERROR,"tag",FORMAT,##__VA_ARGS__);
@@ -162,12 +169,14 @@ jint dynomicRegisterTest3(JNIEnv *env, jobject thiz, jint a) {
 
 JavaVM *_vm;
 
+//需要动态注册的方法数组
 static const JNINativeMethod methods[] = {
         {"dynomicRegisterTest",  "(I)V", (void *) dynomicRegisterTest},
         {"dynomicRegisterTest2", "(I)I", (int *) dynomicRegisterTest2},
         {"dynomicRegisterTest3", "(I)I", (int *) dynomicRegisterTest3}
 };
 
+//需要动态注册native方法的类名
 static const char *className = "com/youbesun/myapplication/NDKTool";
 
 JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -219,6 +228,8 @@ void *threadTask(void *args) {
     env->CallVoidMethod(context->cls, methodId);
     delete (context);
     context = 0;
+
+    _vm->DetachCurrentThread();
     return 0;
 }
 
@@ -233,3 +244,66 @@ Java_com_youbesun_myapplication_NDKTool_testThread(JNIEnv *env, jobject cls) {
     //启动线程
     pthread_create(&pid, 0, threadTask, context);
 }
+
+
+const char *Common_MediaPath(const char *fileName) {
+    char *filePath = (char *) calloc(256, sizeof(char));
+
+    strcat(filePath, "file:///android_asset/");
+    strcat(filePath, fileName);
+
+    return filePath;
+}
+
+struct PayContext {
+    System *system;
+    Sound *sound = NULL;
+    Channel *channel;
+    bool playing = true;
+    const char *path;
+};
+
+//引入第三方开fmod
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_youbesun_myapplication_NDKTool_fmodTest(JNIEnv *env, jclass cls, jstring path_) {
+    PayContext *context = new PayContext;
+
+    context->path = env->GetStringUTFChars(path_, 0);
+
+    LOGE("path: %s", context->path);
+
+    try {
+        System_Create(&context->system);
+        FMOD_RESULT result = context->system->init(32, FMOD_INIT_NORMAL, 0);
+
+        const char *m_systemResult = FMOD_ErrorString(result);
+        LOGE("m_systemResult:%d %s", result, m_systemResult);
+        //创建声音
+        context->system->createSound(context->path, FMOD_DEFAULT, 0, &(context->sound));
+        context->sound->setMode(FMOD_LOOP_OFF);
+
+        //原生播放
+        context->system->playSound(context->sound, 0, false, &context->channel);
+
+
+        context->system->update();
+
+        while (context->playing) {
+            context->channel->isPlaying(&context->playing);
+            usleep(50 * 1000);
+        }
+
+        LOGE("playing: %o", context->playing);
+    } catch (...) {
+        goto end;
+    }
+    goto end;
+    end:
+    context->sound->release();
+    context->system->close();
+    context->system->release();
+
+    env->ReleaseStringUTFChars(path_, context->path);
+}
+

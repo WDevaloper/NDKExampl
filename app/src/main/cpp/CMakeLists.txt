@@ -6,6 +6,9 @@
 #指定cmake 最低支持的版本
 cmake_minimum_required(VERSION 3.4.1)
 
+#设置头文件目录
+include_directories(${CMAKE_SOURCE_DIR}/inc)
+
 
 #创建一个静态或者动态库，并提供其关联的源文件路径，开发者可以定义多个库，CMake会自动去构建它们。Gradle可以自动将它们打包进APK中。
 #第一个参数——native-lib：是库的名称,生成如.so的名字
@@ -33,5 +36,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_SOURCE_DIR}/../jniLibs/${ANDRO
 #第一个参数——native-lib：指定的目标库
 #第一个参数——${log-lib}：将目标库链接到NDK中的日志库
 #你可以同时依赖多个库，如：target_link_libraries(native-lib log log2...)
-target_link_libraries(native-lib ${log-lib} Test)
+target_link_libraries(
+        native-lib
+        ${log-lib}
+        Test
+        fmod
+        fmodL
+)
 

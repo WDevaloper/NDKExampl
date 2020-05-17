@@ -29,6 +29,9 @@ public class NDKTool {
     public native int dynomicRegisterTest3(int a);
 
 
+    public static native void fmodTest(String path_);
+
+
     public void printf() {
         Log.e("tag", "NDKTool printf");
     }
