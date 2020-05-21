@@ -9,10 +9,12 @@
 #include "inc/fmod_errors.h"
 #include "inc/fmod.hpp"
 #include "inc/fmod_common.h"
+#include "NewTest.h"
 
 using namespace FMOD;
 
 using namespace std;
+using namespace Test;
 
 
 #define LOGI(FORMAT, ...) __android_log_print(ANDROID_LOG_INFO,"tag",FORMAT,##__VA_ARGS__);
@@ -24,6 +26,7 @@ using namespace std;
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_youbesun_myapplication_NDKTool_test(JNIEnv *env, jclass clazz) {
+    newTest();
     LOGE("%s", "ddddd");
     return env->NewStringUTF("Java_com_youbesun_myapplication_NDKTool_test");
 }

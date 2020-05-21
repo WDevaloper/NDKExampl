@@ -5,10 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.concurrent.thread
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import org.fmod.FMOD
 
 
 //adb connect 127.0.0.1:62001
@@ -45,7 +41,6 @@ class MainActivity : AppCompatActivity() {
 
 
         val path = "file:///android_asset/opportunity_is_here.wav"
-        FMOD.init(this)
         thread { NDKTool.fmodTest(path) }
     }
 

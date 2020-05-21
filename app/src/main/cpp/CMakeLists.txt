@@ -15,7 +15,8 @@ include_directories(${CMAKE_SOURCE_DIR}/inc)
 #第二个参数——SHARED：是库的类别，是SHARED的还是STATIC的
 #第三个参数——src/main/cpp/native-lib.cpp：是库的源文件的路径
 #如果想构建多个库，可以添加多个吧ing指定源码
-add_library(native-lib SHARED native-lib.cpp)
+set(srcList native-lib.cpp;Demo.cpp;NewTest.cpp)
+add_library(native-lib SHARED ${srcList})
 #add_library(Test SHARED Test.cpp)
 
 
@@ -43,4 +44,3 @@ target_link_libraries(
         fmod
         fmodL
 )
-
