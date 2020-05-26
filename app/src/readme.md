@@ -279,3 +279,105 @@ sudo make -j16
 sudo make install
 echo -e "\033[32m build successful \033[0m"
 
+
+
+
+
+#-----------------------NDK r21---------------------
+编译工具链目录：
+toolchains/llvm/prebuilt/linux-x86_64/bin
+交叉编译环境目录：
+toolchains/llvm/prebuilt/linux-x86_64/sysroot
+
+本文选择 CPU 架构 armv7a，Android版本 21:
+armv7a-linux-androideabi21-clang
+armv7a-linux-androideabi21-clang++
+
+
+
+
+#!/bin/bash
+#构建日志输出文件
+LOG_FILE=./android/config.log
+#ndk 主目录，如果已经配置了环境变量，可以直接引用环境变量即可
+NDKROOT=/home/ubuntu/android-ndk-r21
+#TOOLCHAIN 变量指向ndk中的交叉编译gcc所在目录
+TOOLCHAIN=$NDKROOT/toolchains/llvm/prebuilt/linux-x86_64
+ISYSROOT=$NDKROOT/sysroot
+ASM=$ISYSROOT/usr/include/arm-linux-androideabi
+ADDI_CFLAGS=" -marm"
+PREFIX=./android2/armeabi-v7a
+echo "NDKROOT=$NDKROOT,TOOLCHAIN=$TOOLCHAIN"
+FLAGS=" -I$ASM -isysroot $ISYSROOT -D__ANDROID_API__=21 -U_FILE_OFFSET_BITS -Os -fPIC -DANDROID -Wno-deprecated -mfloat-abi=softfp -marm"
+
+echo -e "\033[32m build start \033[0m"
+
+./configure \
+--prefix=$PREFIX \
+--enable-small \
+--disable-programs \
+--disable-avdevice \
+--disable-encoders \
+--disable-muxers \
+--disable-filters \
+--disable-doc \
+--enable-cross-compile \
+--cc=$TOOLCHAIN/bin/armv7a-linux-androideabi21-clang \
+--cross-prefix=$TOOLCHAIN/bin/arm-linux-androideabi- \
+--enable-neon \
+--enable-static \
+--disable-shared \
+--sysroot="$TOOLCHAIN/sysroot" \
+--extra-cflags="$FLAGS" \
+--extra-ldflags="$ADDI_LDFLAGS" \
+--arch=arm \
+--target-os=android
+#执行清理
+sudo make clean
+#执行脚本生成的 makefile
+sudo make -j8
+sudo make install
+echo -e "\033[32m build successful\033[0m"
+
+
+注意ndk-r21 已经把sysroot移动到 $TOOLCHAIN/sysroot，而r17c sysroot还在 $NDKROOT/platforms/android-21/arch-arm
+注意ndk-r21中 --cc也是要指定的，因为他的cross-prefix命名规则不一样了：
+比如：--cc=$TOOLCHAIN/bin/armv7a-linux-androideabi21-clang和cross-prefix=$TOOLCHAIN/bin/arm-linux-androideabi-
+明显不一样了
+
+
+ndk r21版本-----------------------默认的 cc ar nm 路径前缀是一样的但是在r21之后NDK的ar/nm 和 cc的前缀是不一样了
+工具链：/home/ubuntu/android-ndk-r21/toolchains/llvm/prebuilt/linux-x86_64/bin
+
+1、构建armeabi64-v8a:
+aarch64-linux-android-ar
+aarch64-linux-android-nm
+aarch64-linux-android21-clang
+
+2、构建armeabi-v7a:
+arm-linux-androideabi-ar
+arm-linux-androideabi-nm
+armv7a-linux-androideabi21-clang
+
+
+这个问题怎么解决，网上有人说修改ffmpeg的configure文件增加corss-prefix-clang命令，是可以解决这个问题，但是我们有更简单的？
+这个时候就需要：
+指定C的编译工具 --cc=$TOOLCHAIN/bin/armv7a-linux-androideabi21-clang
+指定交叉编译工具前缀而这个前缀 会匹配到ar、nm等编译工具--cross-prefix=$TOOLCHAIN/bin/arm-linux-androideabi-
+
+
+来看源码：
+set_default target_os
+if test "$target_os" = android; then
+    cc_default="clang"
+fi
+
+ar_default="${cross_prefix}${ar_default}"
+cc_default="${cross_prefix}${cc_default}"
+nm_default="${cross_prefix}${nm_default}"
+
+
+看到了不？ar/nm 和 cc的前缀是不一样的，前者是 arm-linux-androideabi- ， 后者是 armv7a-linux-androideabi16-。
+所以我们直接在命令中直接修改覆盖了默认的值：
+--cc=$TOOLCHAIN/bin/armv7a-linux-androideabi21-clang 覆盖默认值姐可以了
+那么ar和nm我们可以使用默认值
