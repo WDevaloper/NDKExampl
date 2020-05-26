@@ -367,11 +367,20 @@ armv7a-linux-androideabi21-clang
 
 
 来看源码：
+ar_default="ar"
+cc_default="gcc"
+cxx_default="g++"
+host_cc_default="gcc"
+doxygen_default="doxygen"
+
+
+//如果是android 那么就是clang
 set_default target_os
 if test "$target_os" = android; then
     cc_default="clang"
 fi
 
+//cross_prefix默认是[] 意思是"",所以一般我们都需要指定cross_prefix
 ar_default="${cross_prefix}${ar_default}"
 cc_default="${cross_prefix}${cc_default}"
 nm_default="${cross_prefix}${nm_default}"

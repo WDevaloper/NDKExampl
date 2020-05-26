@@ -318,15 +318,15 @@ Toolchain options:
   --pkg-config-flags=FLAGS pass additional flags to pkgconf []
   --ranlib=RANLIB          use ranlib RANLIB [ranlib]
   --doxygen=DOXYGEN        use DOXYGEN to generate API doc [doxygen]
-  --host-cc=HOSTCC         use host C compiler HOSTCC
+  --host-cc=HOSTCC         使用主机C编译器HOSTCC
   --host-cflags=HCFLAGS    use HCFLAGS when compiling for host
   --host-cppflags=HCPPFLAGS use HCPPFLAGS when compiling for host
   --host-ld=HOSTLD         use host linker HOSTLD
   --host-ldflags=HLDFLAGS  use HLDFLAGS when linking for host
   --host-extralibs=HLIBS   use libs HLIBS when linking for host
   --host-os=OS             compiler host OS []
-  --extra-cflags=ECFLAGS   add ECFLAGS to CFLAGS []
-  --extra-cxxflags=ECFLAGS add ECFLAGS to CXXFLAGS []
+  --extra-cflags=ECFLAGS   将ECFLAGS添加到CFLAGS []
+  --extra-cxxflags=ECFLAGS 将ECFLAGS添加到CXXFLAGS []
   --extra-objcflags=FLAGS  add FLAGS to OBJCFLAGS []
   --extra-ldflags=ELDFLAGS add ELDFLAGS to LDFLAGS []
   --extra-ldexeflags=ELDFLAGS add ELDFLAGS to LDEXEFLAGS []
@@ -377,7 +377,7 @@ Optimization options (experts only):
   --disable-armv6          disable armv6 optimizations
   --disable-armv6t2        disable armv6t2 optimizations
   --disable-vfp            disable VFP optimizations
-  --disable-neon           disable NEON optimizations
+  --disable-neon           禁用NEON优化
   --disable-inline-asm     disable use of inline assembly
   --disable-x86asm         disable use of standalone x86 assembly
   --disable-mipsdsp        disable MIPS DSP ASE R1 optimizations
@@ -421,5 +421,5 @@ Developer options (useful when working on FFmpeg itself):
   --libfuzzer=PATH         path to libfuzzer
   --ignore-tests=TESTS     comma-separated list (without "fate-" prefix
                            in the name) of tests whose result is ignored
-  --enable-linux-perf      enable Linux Performance Monitor API
+  --enable-linux-perf      启用Linux Performance Monitor API
   --disable-large-tests    disable tests that use a large amount of memory
