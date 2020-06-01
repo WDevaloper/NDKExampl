@@ -17,7 +17,7 @@ include_directories(${CMAKE_SOURCE_DIR}/inc)
 #如果想构建多个库，可以添加多个吧ing指定源码
 set(srcList native-lib.cpp;Demo.cpp;NewTest.cpp)
 add_library(native-lib SHARED ${srcList})
-#add_library(Test SHARED Test.cpp)
+#add_library(Color SHARED Color.cpp)
 
 
 #找到一个预编译的库，并作为一个变量保存起来。
